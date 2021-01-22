@@ -1,5 +1,8 @@
 
 import requests
+import datetime
+import csv
+from multiprocessing import Pool
 from bs4 import BeautifulSoup
 
 
@@ -29,17 +32,26 @@ def convert_to_list_link():
     return data
 
 
-def check_link_response():
-    """request for each page from the list"""
-    data = convert_to_list_link()
-    for link in data:
-        response = requests.get(link)
-        print(link, response)
+def print_and_write_csv(data):
+    """outputs the requested URL and response to the console and
+    writes url and response to file"""
+    print(data, requests.get(data))
+    with open('list_url_and_response.csv', 'a') as f:
+        writer = csv.writer(f)
 
 
 def main():
-    check_link_response()
+    """request for each page from the list"""
+    start = datetime.datetime.now()
+    data = convert_to_list_link()
+    with Pool(16) as pool:
+        pool.map(print_and_write_csv, data)
+    end = datetime.datetime.now()
+    total = end - start
+    print(str(total))
 
 
 if __name__ == '__main__':
     main()
+
+

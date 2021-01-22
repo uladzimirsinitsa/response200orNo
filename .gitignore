@@ -1,4 +1,8 @@
 env
 /.idea
 .pyc
+/.pyc
 /.pytest_cache
+.csv
+/.csv
+
