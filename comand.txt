@@ -1,11 +1,4 @@
 
-
-git commit -m ""
-git push -u origin main
-
-
-
-
 pip install -r reqs.txt
 pip freeze > reqs.txt
 

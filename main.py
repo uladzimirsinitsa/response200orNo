@@ -1,55 +1,44 @@
+
 import requests
 from bs4 import BeautifulSoup
-import csv
+
 
 URL = "https://casinogoodorbad.com/sitemap.xml"
 
 
-def get_html_and_content():
-    text_and_html_of_page = requests.get(URL).text  # Response
-    return text_and_html_of_page  # возращает HTML код
+def get_html_from_sitemap():
+    """requests URL and returns HTML"""
+    html_of_sitemap = requests.get(URL).text
+    return html_of_sitemap
 
 
-def get_all_links():
-    content = get_html_and_content()
-    soup = BeautifulSoup(content, 'lxml')
-    all_links = soup.find_all('loc')
-    links = []
-
-    for link_or_url in all_links:
-        links.append(link_or_url.text)  # append list and split html tags
-    return links
+def get_links_without_tags():
+    """the data is cleared of tags"""
+    html_of_sitemap = get_html_from_sitemap()
+    soup = BeautifulSoup(html_of_sitemap, 'lxml')
+    clear_links = soup.find_all('loc')
+    return clear_links
 
 
-def response_200_or_no():
-    links = get_all_links()
-    for link in links:
+def convert_to_list_link():
+    """converting an object BS to a list Python"""
+    clear_links = get_links_without_tags()
+    data = []
+    for link in clear_links:
+        data.append(link.text)
+    return data
+
+
+def check_link_response():
+    """request for each page from the list"""
+    data = convert_to_list_link()
+    for link in data:
         response = requests.get(link)
         print(link, response)
 
 
-def urls_of_page_in_list_main_page():
-    links = get_all_links()
-    new_links = []
-    for link in links:
-        soup = BeautifulSoup(requests.get(link).text, 'lxml')
-        soup.find_all('a')
-        for url in soup.find_all('a'):
-            new_links.append(url.get('href'))
-    return new_links
-
-
-def print_new_links():
-    new_links = urls_of_page_in_list_main_page()
-    print(new_links)
-    print(len(new_links))
-
-
 def main():
-    get_all_links()
-    #response_200_or_no()
-    urls_of_page_in_list_main_page()
-    print_new_links()
+    check_link_response()
 
 
 if __name__ == '__main__':
